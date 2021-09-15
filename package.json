@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/krfsm/learning-cypress#readme",
   "devDependencies": {
-    "cypress": "^8.4.0"
+    "cypress": "^8.4.0",
+    "eslint-plugin-cypress": "^2.12.1"
   }
 }
