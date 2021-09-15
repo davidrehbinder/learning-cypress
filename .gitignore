@@ -1,2 +1,4 @@
-node_module
+cypress
+cypress.json
+node_modules
 package-lock.json
