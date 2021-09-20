@@ -1,4 +1,7 @@
+**/cypress/downloads/
 **/cypress/integration/examples-*/
+**/cypress/screenshots/
+**/cypress/videos/
 **/modules/__pycache__
 database.db
 node_modules
