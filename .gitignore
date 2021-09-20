@@ -3,6 +3,7 @@
 **/cypress/screenshots/
 **/cypress/videos/
 **/modules/__pycache__
+**/node_modules
 database.db
-node_modules
+favicon.ico
 package-lock.json

@@ -20,6 +20,17 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
             self.send_response(403)
             self.end_headers()
             self.wfile.write(b'Private!')
+        elif self.path == '/':
+            try:
+                with open('index.html', 'rb') as f:
+                    data = f.read()
+                self.send_response(200)
+                self.end_headers()
+                self.wfile.write(data)
+            except Exception:
+                self.send_response(500)
+                self.end_headers()
+                self.wfile.write(b'error')
         elif os.path.isdir(path):
             try:
                 self.send_response(200)
