@@ -23,6 +23,7 @@ input {
     grid-gap: 10px;
     column-width: 90px;
     min-width: 200px;
+    max-width: 500px;
 }
 
 .button, #logout {

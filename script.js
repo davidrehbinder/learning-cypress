@@ -25,7 +25,6 @@
             createUserOkButton.addEventListener("click", createUserAttempt);
             break;
         default:
-            console.log("It's not working.");
     }
 
     if(document.cookie.split(";").filter(s => s.includes("username")) != "") {
@@ -39,7 +38,9 @@
         logoutButton.addEventListener("click", logOut);
     };
 
-    cancelButton.addEventListener("click", clickCancel);
+    if(cancelButton != null) {
+        cancelButton.addEventListener("click", clickCancel);
+    }
 
     function loginAttempt() {
         responseArea.innerHTML = "";
@@ -76,6 +77,8 @@
             responseArea.innerHTML = "User " + username + " created.";
         } else {
             responseArea.innerHTML = "Username and password required.";
+            usernameField.value = "";
+            passwordField.value = "";
         };
     };
 

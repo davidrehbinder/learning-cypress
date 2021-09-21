@@ -1,16 +1,16 @@
 describe('Checking index page.', () => {
-    it('successfully loads.', () => {
+
+    beforeEach('it successfully loads.', () => {
         cy.visit('/')
     })
 
     it('has links to the login and sign up pages.', () => {
-        cy.visit('/')
-        cy.contains('Sign in')
-        cy.contains('Sign up')
+        cy.get('#login').should('contain', 'Sign in').and('have.attr', 'href', 'login.html')
+        cy.get('#signup').should('contain', 'Sign up').and('have.attr', 'href', 'sign_up.html')
     })
 
-    it('has a functioning login.', () => {
-        cy.visit('/login.html')
-        cy.contains('Sign In Here!')
+    it('does not show logged in status', () => {
+        cy.get('#login-status').should('be.empty')
     })
+
 })
