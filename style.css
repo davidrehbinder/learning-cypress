@@ -12,12 +12,17 @@ a {
     text-decoration: none;
 }
 
+input {
+    background-color: #eeeeee;
+    width: 210px;
+}
+
 .box {
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-gap: 10px;
     column-width: 90px;
-    width: 200px;
+    min-width: 200px;
 }
 
 .button, #logout {
@@ -26,4 +31,5 @@ a {
 
 .input {
     line-height: 1.5;
+
 }

@@ -72,7 +72,7 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
         if (self.path == "/create_user.json"):
             content_len = int(self.headers.get('Content-Length'))
             post_body = json.loads(str(self.rfile.read(content_len), encoding="utf-8"))
-            print("Request payload: " + json.dumps(post_body), encoding="utf-8")
+            print("Request payload: " + json.dumps(post_body))
             username = post_body['username']
             password = post_body['password']
             user_creation_status = database.create_user(username, password)

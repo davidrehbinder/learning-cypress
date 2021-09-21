@@ -22,7 +22,7 @@
             break;
         case "/sign_up.html":
             var createUserOkButton = document.getElementById("create_user_ok");
-            createUserOkButton.addEventListener("click", createUser);
+            createUserOkButton.addEventListener("click", createUserAttempt);
             break;
         default:
             console.log("It's not working.");
@@ -30,11 +30,11 @@
 
     if(document.cookie.split(";").filter(s => s.includes("username")) != "") {
         var cookieUsername = document.cookie.split(";").filter(s => s.includes("username"));
-        console.log(cookieUsername);
+        cookieUsername = cookieUsername[0].split("=")[1];
     }
 
     if(document.cookie.split(";").filter(s => s.includes("login=success")) != "") {
-        loginStatus.innerHTML = "You are logged in.";
+        loginStatus.innerHTML = "You are logged in as user " + cookieUsername;
         logoutButton.innerHTML = "Log out.";
         logoutButton.addEventListener("click", logOut);
     };
@@ -57,22 +57,26 @@
         login.send(dataString);
     };
 
-    function createUser() {
-        console.log("clicky?");
+    function createUserAttempt() {
         responseArea.innerHTML = "";
         createUser.addEventListener("loadend", createUserComplete);
         var data = new Object;
         var username = usernameField.value;
         var password = passwordField.value;
-        usernameField.value = "";
-        passwordField.value = "";
-        data = {"username": username, "password": password};
-        document.cookie = "username=" + username + "; max-age=3600; path=/"
-        console.log(document.cookie);
-        var dataString = JSON.stringify(data);
-        createUser.open("POST", "/create_user.json");
-        createUser.setRequestHeader("Content-Type", "application/json");
-        createUser.send(dataString);
+        if(username && password != "") {
+            usernameField.value = "";
+            passwordField.value = "";
+            data = {"username": username, "password": password};
+            document.cookie = "username=" + username + "; max-age=3600; path=/"
+            console.log(document.cookie);
+            var dataString = JSON.stringify(data);
+            createUser.open("POST", "/create_user.json");
+            createUser.setRequestHeader("Content-Type", "application/json");
+            createUser.send(dataString);
+            responseArea.innerHTML = "User " + username + " created.";
+        } else {
+            responseArea.innerHTML = "Username and password required.";
+        };
     };
 
     function clickCancel() {
