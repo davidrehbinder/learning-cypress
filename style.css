@@ -20,7 +20,7 @@ a {
     width: 200px;
 }
 
-.button {
+.button, #logout {
     text-align: right;
 }
 

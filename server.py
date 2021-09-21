@@ -61,30 +61,30 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
             password = post_body['password']
             login_status = database.check_user(username, password)
             if login_status == 'SUCCESS':
-                return_string = 'Login Successful\n'
+                return_object = {'login': 'success'}
                 self.send_response(200)
             else:
-                return_string = 'Login Failed\n'
+                return_object = {'login': 'failure'}
                 self.send_response(403)
             self.send_header("Content-type", "application/json")
             self.end_headers()
-            self.wfile.write(bytes(str(return_string), encoding="utf-8"))
+            self.wfile.write(bytes(str(json.dumps(return_object)), encoding="utf-8"))
         if (self.path == "/create_user.json"):
             content_len = int(self.headers.get('Content-Length'))
             post_body = json.loads(str(self.rfile.read(content_len), encoding="utf-8"))
-            print("Request payload: " + json.dumps(post_body))
+            print("Request payload: " + json.dumps(post_body), encoding="utf-8")
             username = post_body['username']
             password = post_body['password']
             user_creation_status = database.create_user(username, password)
             if user_creation_status == 'SUCCESS':
-                return_string = 'User Creation Successful\n'
+                return_object = {'user_creation': 'success'}
                 self.send_response(200)
             else:
-                return_string = 'User Creation Failed\n'
+                return_object = {'user_creation': 'failure'}
                 self.send_response(409)
             self.send_header("Content-type", "application/json")
             self.end_headers()
-            self.wfile.write(bytes(str(return_string), encoding="utf-8"))
+            self.wfile.write(bytes(str(json.dumps(return_object)), encoding="utf-8"))
 
 httpd = socketserver.TCPServer(("", PORT), MyHandler)
 print("Server started on ", PORT)
