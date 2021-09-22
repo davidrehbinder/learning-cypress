@@ -68,7 +68,7 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
                 print('login successful for ' + username)
             elif login_status == 'FAILURE':
                 return_object = {'login': 'failure'}
-                self.send_response(403)
+                self.send_response(200)
                 print('login failed for ' + username)
             else:
                 return_object = {'login': 'error'}
@@ -91,10 +91,14 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
                 return_object = {'user_creation': 'success'}
                 self.send_response(200)
                 print('user creation successful for ' + username)
-            elif user_creation_status == 'FAILURE':
-                return_object = {'user_creation': 'failure'}
-                self.send_response(409)
-                print('user creation failed for ' + username)
+            elif user_creation_status == 'USER_EXISTS':
+                return_object = {'user_creation': 'user_exists'}
+                self.send_response(200)
+                print('user already exists error for ' + username)
+            elif user_creation_status == 'TOO_SHORT':
+                return_object = {'user_creation': 'too_short'}
+                self.send_response(200)
+                print('password too short for ' + username)
             else:
                 return_object = {'user_creation': 'error'}
                 self.send_response(500)

@@ -119,8 +119,16 @@
             case 'success':
                 responseArea.innerHTML = "User " + cookieUsername() + " created.";
                 break;
-            case 'failure':
+            case 'user_exists':
                 responseArea.innerHTML = "User " + cookieUsername() + " already exists.";
+                var cookie = document.cookie.split(";");
+                cookie = cookie.map(x => x + "; max-age=0");
+                cookie.map(x => document.cookie = x);
+                usernameField.value = "";
+                passwordField.value = "";
+                break;
+            case 'too_short':
+                responseArea.innerHTML = "Password is too short (needs to be more than 4 characters).";
                 var cookie = document.cookie.split(";");
                 cookie = cookie.map(x => x + "; max-age=0");
                 cookie.map(x => document.cookie = x);

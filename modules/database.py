@@ -28,12 +28,15 @@ def create_user(user, password):
     exists = cur.fetchall()
     if len(exists) != 1 or exists[0][0] != 1:
         try:
-            cur.execute('''INSERT INTO users(username, password)
-                VALUES (?,?)''', (user, password))
-            con.commit()
-            return 'SUCCESS'
+            if len(password) < 4:
+                return 'TOO_SHORT'
+            else: 
+                cur.execute('''INSERT INTO users(username, password)
+                    VALUES (?,?)''', (user, password))
+                con.commit()
+                return 'SUCCESS'
         except sqlite3.Error as e:
             print('An error occurred:', e.args[0])
             return 'ERROR'
     else:
-        return 'FAILURE'
+        return 'USER_EXISTS'
