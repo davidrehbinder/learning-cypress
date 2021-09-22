@@ -128,7 +128,7 @@
                 passwordField.value = "";
                 break;
             case 'too_short':
-                responseArea.innerHTML = "Password is too short (needs to be more than 4 characters).";
+                responseArea.innerHTML = "Password is too short (needs to be 4 characters or more).";
                 var cookie = document.cookie.split(";");
                 cookie = cookie.map(x => x + "; max-age=0");
                 cookie.map(x => document.cookie = x);
