@@ -7,8 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "cy:run": "cypress run",
     "cy:open": "cypress open",
-    "db:reset": "sqlite3 database.db \"drop table if exists users\""
-
+    "db:reset": "sqlite3 database.db \"delete from users\" \"vacuum\"",
+    "db:seed": "sqlite3 database.db \".read seed.sql\""
   },
   "repository": {
     "type": "git",

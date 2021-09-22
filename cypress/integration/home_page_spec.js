@@ -1,6 +1,6 @@
 describe('Checking index page.', () => {
 
-    beforeEach('it successfully loads.', () => {
+    it('it successfully loads.', () => {
         cy.visit('/')
     })
 

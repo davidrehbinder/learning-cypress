@@ -25,20 +25,15 @@
             createUserOkButton.addEventListener("click", createUserAttempt);
             break;
         default:
-    }
+    };
 
-    if(document.cookie.split(";").filter(s => s.includes("username")) != "") {
-        var cookieUsername = document.cookie.split(";").filter(s => s.includes("username"));
-        cookieUsername = cookieUsername[0].split("=")[1];
-    }
-
-    if(document.cookie.split(";").filter(s => s.includes("login=success")) != "") {
-        loginStatus.innerHTML = "You are logged in as user " + cookieUsername;
+    if (document.cookie.split(";").filter(s => s.includes("login=success")) != "") {
+        loginStatus.innerHTML = "You are logged in as user " + cookieUsername();
         logoutButton.innerHTML = "Log out.";
         logoutButton.addEventListener("click", logOut);
     };
 
-    if(cancelButton != null) {
+    if (cancelButton != null) {
         cancelButton.addEventListener("click", clickCancel);
     }
 
@@ -48,14 +43,20 @@
         var data = new Object;
         var username = usernameField.value;
         var password = passwordField.value;
-        usernameField.value = "";
-        passwordField.value = "";
-        data = {"username": username, "password": password};
-        var dataString = JSON.stringify(data);
-        document.cookie = "username=" + username + "; max-age=3600; path=/"
-        login.open("POST", "/login.json");
-        login.setRequestHeader("Content-Type", "application/json");
-        login.send(dataString);
+        if (username && password != "") {
+            usernameField.value = "";
+            passwordField.value = "";
+            data = {"username": username, "password": password};
+            var dataString = JSON.stringify(data);
+            document.cookie = "username=" + username + "; max-age=3600; path=/"
+            login.open("POST", "/login.json");
+            login.setRequestHeader("Content-Type", "application/json");
+            login.send(dataString);
+        } else {
+            responseArea.innerHTML = "Username and password required.";
+            usernameField.value = "";
+            passwordField.value = "";
+        };
     };
 
     function createUserAttempt() {
@@ -64,17 +65,16 @@
         var data = new Object;
         var username = usernameField.value;
         var password = passwordField.value;
-        if(username && password != "") {
+
+        if (username && password != "") {
             usernameField.value = "";
             passwordField.value = "";
             data = {"username": username, "password": password};
             document.cookie = "username=" + username + "; max-age=3600; path=/"
-            console.log(document.cookie);
             var dataString = JSON.stringify(data);
             createUser.open("POST", "/create_user.json");
             createUser.setRequestHeader("Content-Type", "application/json");
             createUser.send(dataString);
-            responseArea.innerHTML = "User " + username + " created.";
         } else {
             responseArea.innerHTML = "Username and password required.";
             usernameField.value = "";
@@ -88,16 +88,17 @@
     };
 
     function loginComplete() {
-        var loginAttemptStatus = login.status;
-        switch(loginAttemptStatus) {
-            case 200:
+        var loginAttemptStatus = JSON.parse(login.responseText);
+        console.log(loginAttemptStatus);
+        switch(loginAttemptStatus['login']) {
+            case 'success':
                 response = login.responseText;
                 document.cookie = "login=success; max-age=3600; path=/";
-                loginStatus.innerHTML = "You are logged in as " + cookieUsername;
+                loginStatus.innerHTML = "You are logged in as " + cookieUsername();
                 logoutButton.innerHTML = "Log out.";
                 logoutButton.addEventListener("click", logOut);
                 break;
-            case 403:
+            case 'failure':
                 responseArea.innerHTML = "Login failed.";
                 var cookie = document.cookie.split(";");
                 cookie = cookie.map(x => x + "; max-age=0");
@@ -105,7 +106,7 @@
                 loginStatus.innerHTML = "";
                 logoutButton.innerHTML = "";
                 break;
-            case 500:
+            case 'error':
                 break;
             default:
                 console.log("💩");
@@ -113,15 +114,26 @@
     };
     
     function createUserComplete() {
-        var createUserStatus = createUser.status;
-        switch(createUserStatus) {
-            case 200:
-                response = JSON.parse(login.responseText);
-                responseArea.innerHTML = (response);
+        var createUserStatus = JSON.parse(createUser.responseText);
+        switch (createUserStatus['user_creation']) {
+            case 'success':
+                responseArea.innerHTML = "User " + cookieUsername() + " created.";
                 break;
-            case 403:
+            case 'failure':
+                responseArea.innerHTML = "User " + cookieUsername() + " already exists.";
+                var cookie = document.cookie.split(";");
+                cookie = cookie.map(x => x + "; max-age=0");
+                cookie.map(x => document.cookie = x);
+                usernameField.value = "";
+                passwordField.value = "";
                 break;
-            case 500:
+            case 'error':
+                responseArea.innerHTML = "An error occurred.";
+                var cookie = document.cookie.split(";");
+                cookie = cookie.map(x => x + "; max-age=0");
+                cookie.map(x => document.cookie = x);
+                usernameField.value = "";
+                passwordField.value = "";
                 break;
             default:
                 console.log("💩");
@@ -135,5 +147,12 @@
         loginStatus.innerHTML = "";
         logoutButton.innerHTML = "";
     }
+
+    function cookieUsername() {
+        if (document.cookie.split(";").filter(s => s.includes("username")) != "") {
+            let username = document.cookie.split(";").filter(s => s.includes("username"));
+            return username[0].split("=")[1];
+        };
+    };
 
 })();

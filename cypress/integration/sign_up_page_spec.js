@@ -3,7 +3,8 @@ describe('Checking sign up page.', () => {
     before('reset database', () => {
         cy.exec('npm run db:reset')
     })
-    beforeEach('it successfully loads', () => {
+
+    it('it successfully loads', () => {
         cy.visit('/sign_up.html')
     })
 
@@ -24,6 +25,13 @@ describe('Checking sign up page.', () => {
         cy.get('#password').type('apa')
         cy.get('#create_user_ok').click()
         cy.get('#response').should('have.text', 'Username and password required.')
+    })
+
+    it('shows the username you created when successful', () => {
+        cy.get('#username').type('user')
+        cy.get('#password').type('password')
+        cy.get('#create_user_ok').click()
+        cy.get('#response').should('have.text', 'User user created.')
     })
 
 })

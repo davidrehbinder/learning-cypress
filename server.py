@@ -53,44 +53,62 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
                 self.wfile.write(b'error')
     def do_POST(self):
         print(self.path)
-        if (self.path == "/login.json"):
+
+        if (self.path == '/login.json'):
             content_len = int(self.headers.get('Content-Length'))
-            post_body = json.loads(str(self.rfile.read(content_len), encoding="utf-8"))
-            print("Request payload: " + json.dumps(post_body))
+            post_body = json.loads(str(self.rfile.read(content_len), encoding='utf-8'))
+            print('Request payload: ' + json.dumps(post_body))
             username = post_body['username']
             password = post_body['password']
-            login_status = database.check_user(username, password)
+            login_status = database.login_user(username, password)
+            print(login_status)
             if login_status == 'SUCCESS':
                 return_object = {'login': 'success'}
                 self.send_response(200)
-            else:
+                print('login successful for ' + username)
+            elif login_status == 'FAILURE':
                 return_object = {'login': 'failure'}
                 self.send_response(403)
-            self.send_header("Content-type", "application/json")
+                print('login failed for ' + username)
+            else:
+                return_object = {'login': 'error'}
+                self.send_response(500)
+                print('login error for ' + username)
+
+            self.send_header('Content-type', 'application/json')
             self.end_headers()
-            self.wfile.write(bytes(str(json.dumps(return_object)), encoding="utf-8"))
-        if (self.path == "/create_user.json"):
+            self.wfile.write(bytes(str(json.dumps(return_object)), encoding='utf-8'))
+
+        if (self.path == '/create_user.json'):
             content_len = int(self.headers.get('Content-Length'))
-            post_body = json.loads(str(self.rfile.read(content_len), encoding="utf-8"))
-            print("Request payload: " + json.dumps(post_body))
+            post_body = json.loads(str(self.rfile.read(content_len), encoding='utf-8'))
+            print('Request payload: ' + json.dumps(post_body))
             username = post_body['username']
             password = post_body['password']
             user_creation_status = database.create_user(username, password)
+
             if user_creation_status == 'SUCCESS':
                 return_object = {'user_creation': 'success'}
                 self.send_response(200)
-            else:
+                print('user creation successful for ' + username)
+            elif user_creation_status == 'FAILURE':
                 return_object = {'user_creation': 'failure'}
                 self.send_response(409)
-            self.send_header("Content-type", "application/json")
-            self.end_headers()
-            self.wfile.write(bytes(str(json.dumps(return_object)), encoding="utf-8"))
+                print('user creation failed for ' + username)
+            else:
+                return_object = {'user_creation': 'error'}
+                self.send_response(500)
+                print('user creation error for ' + username)
 
-httpd = socketserver.TCPServer(("", PORT), MyHandler)
-print("Server started on ", PORT)
+            self.send_header('Content-type', 'application/json')
+            self.end_headers()
+            self.wfile.write(bytes(str(json.dumps(return_object)), encoding='utf-8'))
+
+httpd = socketserver.TCPServer(('', PORT), MyHandler)
+print('Server started on ', PORT)
 try:
     httpd.serve_forever()
 except KeyboardInterrupt:
     pass
 httpd.server_close()
-print("Server stopped.")
+print('Server stopped.')
