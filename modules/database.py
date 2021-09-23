@@ -14,7 +14,6 @@ def login_user(user, password):
     cur.execute('''SELECT 1 FROM users WHERE username = ?
         AND password = ?''', (user, password))
     status = cur.fetchall()
-    print(status)
     if len(status) != 1 or status[0][0] != 1:
         return 'FAILURE'
     elif status[0][0] == 1:

@@ -1,8 +1,7 @@
 describe('Checking log in page.', () => {
 
     before('reset and seed database', () => {
-        cy.exec('npm run db:reset')
-        cy.exec('npm run db:seed')
+        cy.exec('npm run db:reset && npm run db:seed')
     })
 
     it('it successfully loads', () => {
