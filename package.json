@@ -23,5 +23,8 @@
   "devDependencies": {
     "cypress": "^8.4.0",
     "eslint-plugin-cypress": "^2.12.1"
+  },
+  "dependencies": {
+    "selenium-webdriver": "^4.0.0-rc-1"
   }
 }
