@@ -4,7 +4,7 @@ Just learning cypress stuff.
 
 ## What it does
 
-Runs a *very* simple web application (currently with three pages - index, login and sign up), and has a bunch of [Cypress](https://cypress.io/) tests running against it.
+Runs a *very* simple web application (currently with four pages - index, login, sign up, and a page that's only viewable in logged in state), and has a bunch of [Cypress](https://cypress.io/) tests running against it.
 
 ## Requirements
 
