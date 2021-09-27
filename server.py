@@ -35,7 +35,6 @@ class MyHandler(server.BaseHTTPRequestHandler):
         cookies = self.parse_cookies(self.headers['Cookie'])
         if sessions != {}:
             if cookies != None:
-                print(cookies)
                 if 'username' and 'sid' in cookies:
                     username = cookies['username']
                     if (cookies['sid'] == sessions[username]['sid']):
@@ -80,7 +79,6 @@ class MyHandler(server.BaseHTTPRequestHandler):
                 self.wfile.write(b'Error')
         elif self.path == '/loggedin.html':
             try:
-                print
                 if self.user != False:
                     with open('loggedin.html', 'rb') as f:
                         data = f.read()
@@ -161,6 +159,9 @@ class MyHandler(server.BaseHTTPRequestHandler):
         if (self.path == '/create_user.json'):
             self.create_user()
 
+        if (self.path == '/create_post.json'):
+            self.create_post()
+
     def generate_sid(self):
         return ''.join(str(randint(1,9)) for _ in range(100))
 
@@ -194,9 +195,7 @@ class MyHandler(server.BaseHTTPRequestHandler):
 
     def logout(self):
         self.send_response(200)
-        print(sessions, self.user)
         self.clear_cookies()
-        print(sessions)
         self.end_headers()
         if not self.user:
             self.wfile.write(bytes(str(json.dumps({'logout': 'not_logged_in'})), encoding='utf-8'))
@@ -221,7 +220,6 @@ class MyHandler(server.BaseHTTPRequestHandler):
             print('user creation successful for ' + username)
         elif user_creation_status == 'USER_EXISTS':
             return_object = {'user_creation': 'user_exists', 'username': username}
-            print(return_object)
             self.send_response(200)
             print('user already exists error for ' + username)
         elif user_creation_status == 'TOO_SHORT':
@@ -232,6 +230,32 @@ class MyHandler(server.BaseHTTPRequestHandler):
             return_object = {'user_creation': 'error'}
             self.send_response(500)
             print('user creation error for ' + username)
+        self.send_header('Content-type', 'application/json')
+        self.end_headers()
+        self.wfile.write(bytes(str(json.dumps(return_object)), encoding='utf-8'))
+
+    def create_post(self):
+        content_len = int(self.headers.get('Content-Length'))
+        post_body = json.loads(str(self.rfile.read(content_len), encoding='utf-8'))
+        print('Request payload: ' + json.dumps(post_body))
+        username = post_body['username']
+        if self.user == False or self.user != post_body['username']:
+            return_object = {'post_creation': 'failure'}
+            self.send_response(403)
+            print('unauthorised access attempt by ' + username)
+        else:
+            headline = post_body ['headline']
+            content = post_body['content']
+            post_creation_status = database.create_post(username, headline, content)
+            if post_creation_status[0] == 'SUCCESS':
+                post_id = post_creation_status[1]
+                return_object = {'post_creation': 'success', 'post_id': post_id}
+                self.send_response(200)
+                print('post creation successful for ' + username + ', id ' + str(post_id))
+            else:
+                return_object = {'post_creation': 'error'}
+                self.send_response(500)
+                print('post creation error for ' + username)
         self.send_header('Content-type', 'application/json')
         self.end_headers()
         self.wfile.write(bytes(str(json.dumps(return_object)), encoding='utf-8'))

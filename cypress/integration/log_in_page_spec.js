@@ -41,4 +41,10 @@ describe('Checking log in page.', () => {
         cy.get('#login-status').should('have.text', 'You are logged in as login_test')
         cy.get('#logout').should('be.visible')
     })
+
+    it('logs you out if you click "log out"', () => {
+        cy.get('#logout').click()
+        cy.get('#login-status').should('not.be.visible')
+        cy.get('#logout').should('not.be.visible')
+    })
 })
