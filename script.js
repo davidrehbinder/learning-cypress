@@ -66,7 +66,6 @@
 
     function loginComplete() {
         var loginAttemptStatus = JSON.parse(login.responseText);
-        console.log('logged in')
         switch(loginAttemptStatus["login"]) {
             case "success":
                 response = login.responseText;

@@ -3,13 +3,10 @@
 from http import server
 import json
 import os
-from random import randint
 import socketserver
 from modules import database
 
 PORT = 8080
-
-sessions = {}
 
 database.create_tables()
 
@@ -17,47 +14,32 @@ serve_from = os.getcwd()
 
 class MyHandler(server.BaseHTTPRequestHandler):
 
-    def parse_cookies(self, cookie_list):
-        if cookie_list:
-            list_cookie = {}
-            c = cookie_list.split(';')
-            for cookie in range(0,len(c)):
-                list_cookie[c[cookie].split('=')[0].lstrip()] = c[cookie].split('=')[1]
-            return list_cookie
-
     def do_GET(self):
 
         path = serve_from + self.path
         print(self.path)
 
-        clear = True
+        self.user = False
 
         cookies = self.parse_cookies(self.headers['Cookie'])
-        if sessions != {}:
-            if cookies != None:
-                if 'username' and 'sid' in cookies:
-                    username = cookies['username']
-                    if (cookies['sid'] == sessions[username]['sid']):
-                        self.user = sessions[username]
-                        clear = False
-                    else:
-                        del sessions[username]
-                        self.user = False
-                        clear = True
+        if cookies != None:
+            if 'username' and 'sid' in cookies:
+                username = cookies['username']
+                cookie_sid = cookies['sid']
+                session = database.check_session(cookie_sid, username)
+                print(session)
+                if session == 'SUCCESS':
+                    self.user = username
                 else:
                     self.user = False
-                    clear = True
             else:
                 self.user = False
-                clear = True
         else:
             self.user = False
-            clear = True
-
 
         if not os.path.abspath(path).startswith(serve_from):
             self.send_response(403)
-            if clear == True:
+            if self.user == False:
                 self.clear_cookies()
             self.end_headers()
             self.wfile.write(b'Private!')
@@ -66,14 +48,14 @@ class MyHandler(server.BaseHTTPRequestHandler):
                 with open('index.html', 'rb') as f:
                     data = f.read()
                 self.send_response(200)
-                if clear == True:
+                if self.user == False:
                     self.clear_cookies()
                 self.send_header('Content-type', 'text/html')
                 self.end_headers()
                 self.wfile.write(data)
             except Exception:
                 self.send_response(500)
-                if clear == True:
+                if self.user == False:
                     self.clear_cookies()
                 self.end_headers()
                 self.wfile.write(b'Error')
@@ -88,27 +70,26 @@ class MyHandler(server.BaseHTTPRequestHandler):
                     self.wfile.write(data)
                 else:
                     self.send_response(403)
-                    if clear == True:
-                        self.clear_cookies()
+                    self.clear_cookies()
                     self.end_headers()
                     self.wfile.write(b'Forbidden')
             except Exception:
                 self.send_response(500)
-                if clear == True:
+                if self.user == False:
                     self.clear_cookies()
                 self.end_headers()
                 self.wfile.write(b'Error')
         elif os.path.isdir(path):
             try:
                 self.send_response(200)
-                if clear == True:
+                if self.user == False:
                     self.clear_cookies()
                 self.send_header('Content-type', 'text/html')
                 self.end_headers()
                 self.wfile.write(str(os.listdir(path)).encode())
             except Exception:
                 self.send_response(500)
-                if clear == True:
+                if self.user == False:
                     self.clear_cookies()
                 self.end_headers()
                 self.wfile.write(b'error')
@@ -117,14 +98,14 @@ class MyHandler(server.BaseHTTPRequestHandler):
                 with open(path, 'rb') as f:
                     data = f.read()
                 self.send_response(200)
-                if clear == True:
+                if self.user == False:
                     self.clear_cookies()
                 self.send_header('Content-type', 'text/html')
                 self.end_headers()
                 self.wfile.write(data)
             except Exception:
                 self.send_response(500)
-                if clear == True:
+                if self.user == False:
                     self.clear_cookies()
                 self.end_headers()
                 self.wfile.write(b'error')
@@ -132,22 +113,20 @@ class MyHandler(server.BaseHTTPRequestHandler):
     def do_POST(self):
 
         cookies = self.parse_cookies(self.headers['Cookie'])
-        if sessions != {}:
-            if cookies != None:
-                if 'username' and 'sid' in cookies:
-                    username = cookies['username']
-                    if (cookies['sid'] in sessions[username]):
-                        self.user = sessions[username]
-                    else:
-                        del sessions[username]
-                        self.user = False
+
+        if cookies != None:
+            if 'username' and 'sid' in cookies:
+                username = cookies['username']
+                cookie_sid = cookies['sid']
+                session = database.check_session(cookie_sid, username)
+                if session == 'SUCCESS':
+                    self.user = username
                 else:
                     self.user = False
             else:
                 self.user = False
         else:
             self.user = False
-
         print(self.path)
 
         if (self.path == '/login.json'):
@@ -162,9 +141,6 @@ class MyHandler(server.BaseHTTPRequestHandler):
         if (self.path == '/create_post.json'):
             self.create_post()
 
-    def generate_sid(self):
-        return ''.join(str(randint(1,9)) for _ in range(100))
-
     def login(self):
         content_len = int(self.headers.get('Content-Length'))
         post_body = json.loads(str(self.rfile.read(content_len), encoding='utf-8'))
@@ -172,16 +148,16 @@ class MyHandler(server.BaseHTTPRequestHandler):
         username = post_body['username']
         password = post_body['password']
         login_status = database.login_user(username, password)
-        if login_status == 'SUCCESS':
+
+        if login_status[0] == 'SUCCESS':
+            sid = login_status[1]
             self.send_response(200)
-            sid = self.generate_sid()
             self.cookies = ['sid={}'.format(sid), 'username='+username]
             for cookie in range(0, len(self.cookies)):
                 self.send_header('Set-Cookie', self.cookies[cookie] + ';max-age=3600;path=/')
-            sessions[username] = {'sid': sid, 'max-age': 3600}
             return_object = {'login': 'success'}
             print('login successful for ' + username)
-        elif login_status == 'FAILURE':
+        elif login_status[0] == 'FAILURE':
             return_object = {'login': 'failure'}
             self.send_response(200)
             print('login failed for ' + username)
@@ -195,6 +171,8 @@ class MyHandler(server.BaseHTTPRequestHandler):
 
     def logout(self):
         self.send_response(200)
+        if self.user != False:
+            database.delete_sessions(self.user)
         self.clear_cookies()
         self.end_headers()
         if not self.user:
@@ -239,7 +217,7 @@ class MyHandler(server.BaseHTTPRequestHandler):
         post_body = json.loads(str(self.rfile.read(content_len), encoding='utf-8'))
         print('Request payload: ' + json.dumps(post_body))
         username = post_body['username']
-        if self.user == False or self.user != post_body['username']:
+        if self.user != username:
             return_object = {'post_creation': 'failure'}
             self.send_response(403)
             print('unauthorised access attempt by ' + username)
@@ -259,6 +237,14 @@ class MyHandler(server.BaseHTTPRequestHandler):
         self.send_header('Content-type', 'application/json')
         self.end_headers()
         self.wfile.write(bytes(str(json.dumps(return_object)), encoding='utf-8'))
+
+    def parse_cookies(self, cookie_list):
+        if cookie_list:
+            list_cookie = {}
+            c = cookie_list.split(';')
+            for cookie in range(0,len(c)):
+                list_cookie[c[cookie].split('=')[0].lstrip()] = c[cookie].split('=')[1]
+            return list_cookie
 
 httpd = socketserver.TCPServer(('', PORT), MyHandler)
 print('Server started on ', PORT)
