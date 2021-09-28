@@ -27,7 +27,6 @@ class MyHandler(server.BaseHTTPRequestHandler):
                 username = cookies['username']
                 cookie_sid = cookies['sid']
                 session = database.check_session(cookie_sid, username)
-                print(session)
                 if session == 'SUCCESS':
                     self.user = username
                 else:
@@ -216,24 +215,29 @@ class MyHandler(server.BaseHTTPRequestHandler):
         content_len = int(self.headers.get('Content-Length'))
         post_body = json.loads(str(self.rfile.read(content_len), encoding='utf-8'))
         print('Request payload: ' + json.dumps(post_body))
-        username = post_body['username']
-        if self.user != username:
+        if 'username' not in post_body:
             return_object = {'post_creation': 'failure'}
             self.send_response(403)
-            print('unauthorised access attempt by ' + username)
+            print('unauthorised access attempt')
         else:
-            headline = post_body ['headline']
-            content = post_body['content']
-            post_creation_status = database.create_post(username, headline, content)
-            if post_creation_status[0] == 'SUCCESS':
-                post_id = post_creation_status[1]
-                return_object = {'post_creation': 'success', 'post_id': post_id}
-                self.send_response(200)
-                print('post creation successful for ' + username + ', id ' + str(post_id))
+            username = post_body['username']
+            if self.user != username:
+                return_object = {'post_creation': 'failure'}
+                self.send_response(403)
+                print('unauthorised access attempt by ' + username)
             else:
-                return_object = {'post_creation': 'error'}
-                self.send_response(500)
-                print('post creation error for ' + username)
+                headline = post_body ['headline']
+                content = post_body['content']
+                post_creation_status = database.create_post(username, headline, content)
+                if post_creation_status[0] == 'SUCCESS':
+                    post_id = post_creation_status[1]
+                    return_object = {'post_creation': 'success', 'post_id': post_id}
+                    self.send_response(200)
+                    print('post creation successful for ' + username + ', id ' + str(post_id))
+                else:
+                    return_object = {'post_creation': 'error'}
+                    self.send_response(500)
+                    print('post creation error for ' + username)
         self.send_header('Content-type', 'application/json')
         self.end_headers()
         self.wfile.write(bytes(str(json.dumps(return_object)), encoding='utf-8'))

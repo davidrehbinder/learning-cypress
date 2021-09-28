@@ -5,14 +5,17 @@
 
     const usernameField = document.getElementById("username");
     const passwordField = document.getElementById("password");
+    const headlineField = document.getElementById("headline");
+    const contentField = document.getElementById("content");
     const cancelButton = document.getElementById("cancel");
     const loginStatus = document.getElementById("login-status");
     const logoutButton = document.getElementById("logout");
-
+    
     const responseArea = document.getElementById("response");
 
     var login = new XMLHttpRequest();
     var createUser = new XMLHttpRequest();
+    var makePost = new XMLHttpRequest();
     var logout = new XMLHttpRequest();
     var response = new Object();
 
@@ -24,6 +27,10 @@
         case "/sign_up.html":
             var createUserOkButton = document.getElementById("create_user_ok");
             createUserOkButton.addEventListener("click", createUserAttempt);
+            break;
+        case "/loggedin.html":
+            var postOkButton = document.getElementById("post_ok");
+            postOkButton.addEventListener("click", postAttempt);
             break;
         default:
     };
@@ -39,8 +46,18 @@
     }
 
     function clickCancel() {
-        usernameField.value = "";
-        passwordField.value = "";
+        switch (page) {
+            case "/login.html":
+            case "/sign_up.html":
+                usernameField.value = "";
+                passwordField.value = "";
+                break;
+            case "/loggedin.html":
+                headlineField.value = "";
+                contentField.value = "";
+                break;
+            default:
+        };
     };
 
     function loginAttempt() {
@@ -128,7 +145,51 @@
         };
         usernameField.value = "";
         passwordField.value = "";
-};
+    };
+
+        function postAttempt() {
+        responseArea.innerHTML = "";
+        let username = cookieUsername();
+        console.log(username);
+        if (typeof(username) == undefined) {
+            return;
+        };
+        makePost.addEventListener("loadend", postComplete);
+        var data = new Object;
+        var headline = headlineField.value;
+        var content = contentField.value;
+        if (headline && content != "") {
+            headlineField.value = "";
+            contentField.value = "";
+            data = {"username": username, "headline": headline, "content": content};
+            var dataString = JSON.stringify(data);
+            makePost.open("POST", "/create_post.json");
+            makePost.setRequestHeader("Content-Type", "application/json");
+            makePost.send(dataString);
+        } else {
+            responseArea.innerHTML = "Both headline and content required.";
+            headlineField.value = "";
+            contentField.value = "";
+        };
+    };
+
+    function postComplete() {
+        var postAttemptStatus = JSON.parse(makePost.responseText);
+        switch(postAttemptStatus["post_creation"]) {
+            case "success":
+                let post_id = postAttemptStatus["post_id"];
+                responseArea.innerHTML = "Post created successfully, id " + post_id;
+                break;
+            case "failure":
+                responseArea.innerHTML = "Post creation failed.";
+                break;
+            case "error":
+                responseArea.innerHTML = "An error occurred.";
+                break;
+            default:
+                console.log("💩");
+        };
+    };
 
     function logOut() {
         logout.open("POST", "/logout.json");

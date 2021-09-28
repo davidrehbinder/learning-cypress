@@ -6,7 +6,7 @@ describe('Can we make a post?', () => {
 
     let cookie
     it('makes post?', () => {
-        const {username, password, headline, body} = {'username': 'login_test', 'password': 'login', 'headline': 'headline', 'body': 'body'};
+        const {username, password, headline, content} = {'username': 'login_test', 'password': 'login', 'headline': 'headline', 'content': 'body'};
         cy.request({method: 'POST', url: '/login.json', body: {
             username,
             password,
@@ -14,15 +14,15 @@ describe('Can we make a post?', () => {
         cy.getCookie('sid').should('exist').then((c) => {
             cookie = c
         }).then(() => {
-            cy.log('cookie', cookie.value)
+            cy.setCookie('sid', cookie.value)
+            cy.setCookie('username', username)
             cy.request({method: 'POST', url: '/create_post.json', body: {
                 username,
                 headline,
-                body,
-            }, headers: {
-                'sid': cookie.value,
-                'username': username
-            }})
+                content,
+            }}).then((response) => {
+                expect(response.body).to.have.property('post_id')
+            })
         })
     })
 })

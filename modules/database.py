@@ -83,7 +83,6 @@ def create_post(user, headline, content):
     else:
         next_id = id[0][0] + 1
     try:
-        print(next_id, user, headline, content)
         cur.execute('''INSERT INTO posts(id, username, headline, content)
             VALUES(?,?,?,?)''', (next_id, user, headline, content))
         con.commit()
@@ -96,7 +95,6 @@ def create_post(user, headline, content):
 def delete_sessions(user):
     cur.execute('''SELECT 1 FROM sessions WHERE username = ?''', (user,))
     session = cur.fetchall()
-    print(list(session[0]))
     if not (session == []):
         cur.execute('''DELETE FROM sessions WHERE username = ?''', (user,))
         con.commit()
