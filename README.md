@@ -1,16 +1,17 @@
 # learning-cypress
 
-Just learning cypress stuff.
+Just learning Cypress/Selenium Webdriver stuff.
 
 ## What it does
 
-Runs a *very* simple web application (currently with four pages - index, login, sign up, and a page that's only viewable in logged in state), and has a bunch of [Cypress](https://cypress.io/) tests running against it.
+Runs a *very* simple web application (currently with four pages - index, login, sign up, and a page that's only viewable in logged in state where you can post data), and has a bunch of [Cypress](https://cypress.io/) tests running against it. I'm also starting to write Selenium Webdriver tests.
 
 ## Requirements
 
-* Python3 (I wrote the Python bits in Python 3.7)
+* Python3 (I wrote the Python bits for Python 3.7.3)
 * NodeJS (I use Node 14.15) for Cypress -- `npm install cypress` should get it.
 * SQLite3
+* ChromeDriver
 
 ## Running it
 

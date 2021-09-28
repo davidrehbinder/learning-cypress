@@ -8,7 +8,8 @@
     "cy:run": "cypress run",
     "cy:open": "cypress open",
     "db:reset": "sqlite3 database.db \".read reset.sql\"",
-    "db:seed": "sqlite3 database.db \".read seed.sql\""
+    "db:seed": "sqlite3 database.db \".read seed.sql\"",
+    "wd:run": "python selenium/startpage.py"
   },
   "repository": {
     "type": "git",
