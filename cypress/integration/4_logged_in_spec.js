@@ -4,7 +4,7 @@ describe('Checking logged in status.', () => {
         cy.exec('npm run db:reset && npm run db:seed')
     })
 
-    it('gets login cookie', () => {
+    it('gets login cookie and verifies the logged in status', () => {
         const {username, password} = {'username': 'login_test', 'password': 'login'};
         cy.request({method: 'POST', url: '/login.json', body: {
             username,

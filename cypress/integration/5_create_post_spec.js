@@ -5,8 +5,8 @@ describe('Can we make a post?', () => {
     })
 
     let cookie
-    it('makes post?', () => {
-        const {username, password, headline, content} = {'username': 'login_test', 'password': 'login', 'headline': 'headline', 'content': 'body'};
+    const {username, password, headline, content} = {'username': 'login_test', 'password': 'login', 'headline': 'headline 1', 'content': 'body 1'};
+    it('makes a post by API', () => {
         cy.request({method: 'POST', url: '/login.json', body: {
             username,
             password,
@@ -24,5 +24,17 @@ describe('Can we make a post?', () => {
                 expect(response.body).to.have.property('post_id')
             })
         })
+    })
+
+    it('makes a post through the form', () => {
+        cy.request({method: 'POST', url: '/login.json', body: {
+            username,
+            password,
+        }})
+        cy.visit('/loggedin.html')
+        cy.get('#headline').type('headline 2')
+        cy.get('#content').type('body 2')
+        cy.get('#post_ok').click()
+        cy.get('#response').should('contain', 'Post created successfully')
     })
 })
