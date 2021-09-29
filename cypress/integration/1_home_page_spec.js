@@ -5,8 +5,8 @@ describe('Checking index page.', () => {
     })
 
     it('has links to the login and sign up pages.', () => {
-        cy.get('#login').should('contain', 'Sign in').and('have.attr', 'href', 'login.html')
-        cy.get('#signup').should('contain', 'Sign up').and('have.attr', 'href', 'sign_up.html')
+        cy.get('#login').should('contain', 'Sign in').and('have.attr', 'href', '/login.html')
+        cy.get('#signup').should('contain', 'Sign up').and('have.attr', 'href', '/sign_up.html')
     })
 
     it('does not show logged in status', () => {
