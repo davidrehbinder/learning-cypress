@@ -7,8 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "cy:run": "cypress run",
     "cy:open": "cypress open",
-    "db:reset": "sqlite3 database.db \".read reset.sql\"",
-    "db:seed": "sqlite3 database.db \".read seed.sql\"",
+    "db:reset": "sqlite3 database.db \".read sql/reset.sql\"",
+    "db:seed": "sqlite3 database.db \".read sql/seed.sql\"",
     "wd:run": "python selenium/startpage.py"
   },
   "repository": {

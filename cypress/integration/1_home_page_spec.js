@@ -1,7 +1,7 @@
 describe('Checking index page.', () => {
 
     it('it successfully loads.', () => {
-        cy.visit('/')
+        cy.visit('/index.html')
     })
 
     it('has links to the login and sign up pages.', () => {

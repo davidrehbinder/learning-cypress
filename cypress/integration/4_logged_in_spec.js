@@ -11,7 +11,7 @@ describe('Checking logged in status.', () => {
             password,
         }})
 
-        cy.visit('/')
+        cy.visit('/index.html')
         cy.get('#login-status').should('not.be.empty')
     })
 
