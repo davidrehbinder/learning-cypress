@@ -8,9 +8,9 @@
     const headlineField = document.getElementById("headline");
     const contentField = document.getElementById("content");
     const cancelButton = document.getElementById("cancel");
+    const header = document.getElementById("header");
     const loginStatus = document.getElementById("login-status");
     const logoutButton = document.getElementById("logout");
-    const header = document.getElementById("header");
 
     const responseArea = document.getElementById("response");
 
@@ -42,7 +42,8 @@
         logoutButton.innerHTML = "Log out.";
         logoutButton.addEventListener("click", logOut);
         if (page == "/index.html") {
-            header.innerHTML = header.innerHTML = "<a href=\"/loggedin.html\">Create a post</a> | <a href=\"/posts.html\">View posts</a>"
+            header.innerHTML = "<a href=\"/loggedin.html\">Create a post</a> |"
+            header.innerHTML = header.innerHTML +"<a href=\"/posts.html\">View posts</a>"
         };
         if (page == "/posts.html") {
             getPostsAttempt();
