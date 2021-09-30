@@ -92,6 +92,22 @@ def create_post(user, headline, content):
         print('An error occurred:', e.args[0])
         return ['ERROR']
 
+def get_posts():
+    cur.execute('''SELECT * from posts''')
+    posts = cur.fetchall()
+    if posts == []:
+        return_data = {'status': 'NO_POSTS'}
+    elif len(posts) > 0:
+        post_list = []
+        for i in range(0, len(posts)):
+            post_entry = {'id': posts[i][0], 'username': posts[i][1], 'headline': posts[i][2], 'content': posts[i][3]}
+            post_list.append(post_entry)
+        return_data = {'status': 'SUCCESS', 'posts': post_list}
+    else:
+        return_data = {'status': 'ERROR'}
+    print(return_data['status'])
+    return return_data
+
 def delete_sessions(user):
     cur.execute('''SELECT 1 FROM sessions WHERE username = ?''', (user,))
     session = cur.fetchall()

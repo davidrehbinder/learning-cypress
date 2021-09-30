@@ -16,7 +16,7 @@ describe('Can we make a post?', () => {
         }).then(() => {
             cy.setCookie('sid', cookie.value)
             cy.setCookie('username', username)
-            cy.request({method: 'POST', url: '/create_post.json', body: {
+            cy.request({method: 'POST', url: '/post.json', body: {
                 username,
                 headline,
                 content,

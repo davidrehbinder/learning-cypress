@@ -78,6 +78,13 @@ class MyHandler(server.BaseHTTPRequestHandler):
                     self.clear_cookies()
                 self.end_headers()
                 self.wfile.write(b'Error')
+        elif self.path == '/post.json':
+            try:
+                self.get_posts()
+            except Exception:
+                self.send_response(500)
+                self.end_headers()
+                self.wfile.write(b'Error')
         elif os.path.isdir(path):
             try:
                 self.send_response(200)
@@ -137,7 +144,7 @@ class MyHandler(server.BaseHTTPRequestHandler):
         if (self.path == '/create_user.json'):
             self.create_user()
 
-        if (self.path == '/create_post.json'):
+        if (self.path == '/post.json'):
             self.create_post()
 
     def login(self):
@@ -238,6 +245,19 @@ class MyHandler(server.BaseHTTPRequestHandler):
                     return_object = {'post_creation': 'error'}
                     self.send_response(500)
                     print('post creation error for ' + username)
+        self.send_header('Content-type', 'application/json')
+        self.end_headers()
+        self.wfile.write(bytes(str(json.dumps(return_object)), encoding='utf-8'))
+
+    def get_posts(self):
+        post_list = database.get_posts()
+        if post_list['status'] == 'NO_POSTS':
+            return_object = {'status': 'no_posts'}
+        elif post_list['status'] == 'SUCCESS':
+            return_object = {'status': 'success', 'posts': post_list['posts']}
+        elif post_list['status'] == 'ERROR':
+            return_object = {'status': 'error'}
+        self.send_response(200)
         self.send_header('Content-type', 'application/json')
         self.end_headers()
         self.wfile.write(bytes(str(json.dumps(return_object)), encoding='utf-8'))

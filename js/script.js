@@ -10,13 +10,15 @@
     const cancelButton = document.getElementById("cancel");
     const loginStatus = document.getElementById("login-status");
     const logoutButton = document.getElementById("logout");
-    
+    const header = document.getElementById("header");
+
     const responseArea = document.getElementById("response");
 
     var login = new XMLHttpRequest();
     var createUser = new XMLHttpRequest();
     var makePost = new XMLHttpRequest();
     var logout = new XMLHttpRequest();
+    var getPosts = new XMLHttpRequest();
     var response = new Object();
 
     switch (page) {
@@ -39,6 +41,12 @@
         loginStatus.innerHTML = "You are logged in as user " + cookieUsername();
         logoutButton.innerHTML = "Log out.";
         logoutButton.addEventListener("click", logOut);
+        if (page == "/index.html") {
+            header.innerHTML = header.innerHTML = "<a href=\"/loggedin.html\">Create a post</a> | <a href=\"/posts.html\">View posts</a>"
+        };
+        if (page == "/posts.html") {
+            getPostsAttempt();
+        };
     };
 
     if (cancelButton != null) {
@@ -123,7 +131,7 @@
             passwordField.value = "";
         };
     };
-    
+
     function createUserComplete() {
         var createUserStatus = JSON.parse(createUser.responseText);
         console.log(createUserStatus);
@@ -147,7 +155,7 @@
         passwordField.value = "";
     };
 
-        function postAttempt() {
+    function postAttempt() {
         responseArea.innerHTML = "";
         let username = cookieUsername();
         console.log(username);
@@ -163,7 +171,7 @@
             contentField.value = "";
             data = {"username": username, "headline": headline, "content": content};
             var dataString = JSON.stringify(data);
-            makePost.open("POST", "/create_post.json");
+            makePost.open("POST", "/post.json");
             makePost.setRequestHeader("Content-Type", "application/json");
             makePost.send(dataString);
         } else {
@@ -191,12 +199,50 @@
         };
     };
 
+    function getPostsAttempt() {
+        getPosts.addEventListener("loadend", getPostsComplete)
+        getPosts.open("GET", "/post.json");
+        getPosts.setRequestHeader("Content-Type", "application/json");
+        getPosts.send()
+    };
+
+    function getPostsComplete() {
+        let postList = document.getElementById("post-list");
+        postList.innerHTML = ""
+        var getPostsStatus = JSON.parse(getPosts.responseText);
+        switch(getPostsStatus['status']) {
+            case "no_posts":
+                postList.innerHTML = "There are no posts to show.";
+                break;
+            case "error":
+                postList.innerHTML = "Something went wrong.";
+                break;
+            case "success":
+                let postCount = getPostsStatus['posts'].length;
+                let allPosts = getPostsStatus['posts']
+                for (let post = 0; post < postCount; post++) {
+                    let currentPost = allPosts[post];
+                    postList.innerHTML = postList.innerHTML + "<p id=\"post" + currentPost['id'] + "\">";
+                    postList.innerHTML = postList.innerHTML + "<div class=\"headline\">" + currentPost['headline'] + "</div>";
+                    postList.innerHTML = postList.innerHTML + "<div class=\"author\">Author: " + currentPost['username'] + "</div>";
+                    postList.innerHTML = postList.innerHTML + "<div class=\"content\">" + currentPost['content'] + "</div>";
+                    postList.innerHTML = postList.innerHTML + "</p>";
+                };
+                break;
+            default:
+                console.log(getPostsStatus);
+        };
+    };
+
     function logOut() {
         logout.open("POST", "/logout.json");
         logout.setRequestHeader("Content-Type", "application/json");
         logout.send();
         loginStatus.innerHTML = "";
         logoutButton.innerHTML = "";
+        if (page == "/index.html") {
+            header.innerHTML = "";
+        };
     }
 
     function cookieUsername() {

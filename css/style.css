@@ -30,7 +30,18 @@ input {
     text-align: right;
 }
 
+.headline {
+    font-weight: bolder;
+    line-height: 1.5;
+}
+
 .input {
     line-height: 1.5;
 
 }
+
+.post-list {
+    min-width: 200px;
+    max-width: 500px;
+}
+
