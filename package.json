@@ -9,7 +9,7 @@
     "cy:open": "cypress open",
     "db:reset": "sqlite3 database.db \".read sql/reset.sql\"",
     "db:seed": "sqlite3 database.db \".read sql/seed.sql\"",
-    "wd:run": "python selenium/startpage.py"
+    "wd:run": "python selenium/test_1_startpage.py"
   },
   "repository": {
     "type": "git",
