@@ -28,3 +28,16 @@ REPLACE INTO
         "login_test",
         "login"
         );
+REPLACE INTO
+    posts (
+        id,
+        username,
+        headline,
+        content
+        )
+    VALUES (
+        "1",
+        "login_test",
+        "headline 1",
+        "body 1"
+        );
