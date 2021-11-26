@@ -9,6 +9,7 @@
     "cy:open": "cypress open",
     "db:reset": "sqlite3 database.db \".read sql/reset.sql\"",
     "db:seed": "sqlite3 database.db \".read sql/seed.sql\"",
+    "jest:run": "jest",
     "wd:run": "python selenium/test_1_startpage.py"
   },
   "repository": {
@@ -23,7 +24,10 @@
   "homepage": "https://github.com/krfsm/learning-cypress#readme",
   "devDependencies": {
     "cypress": "^8.5.0",
-    "eslint-plugin-cypress": "^2.12.1"
+    "eslint-plugin-cypress": "^2.12.1",
+    "jest": "^27.3.1",
+    "jest-puppeteer": "^6.0.0",
+    "puppeteer": "^11.0.0"
   },
   "dependencies": {
     "selenium-webdriver": "^4.0.0-rc-1"
