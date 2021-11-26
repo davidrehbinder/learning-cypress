@@ -1,18 +1,25 @@
 #!/usr/bin/env python3
 
-from http import server
+from http.server import HTTPServer, BaseHTTPRequestHandler
 import json
 import os
-import socketserver
+import sqlite3
 from modules import database
+
+from socketserver import ThreadingMixIn
+from http.server import HTTPServer
 
 PORT = 8080
 
-database.create_tables()
+def tables():
+    con = sqlite3.connect('database.db', check_same_thread=False)
+    cur = con.cursor()
+    database.create_tables(con, cur)
 
+tables()
 serve_from = os.getcwd()
 
-class MyHandler(server.BaseHTTPRequestHandler):
+class MyHandler(BaseHTTPRequestHandler):
 
     def do_GET(self):
 
@@ -26,7 +33,10 @@ class MyHandler(server.BaseHTTPRequestHandler):
             if 'username' and 'sid' in cookies:
                 username = cookies['username']
                 cookie_sid = cookies['sid']
-                session = database.check_session(cookie_sid, username)
+                con = sqlite3.connect('database.db', check_same_thread=False)
+                cur = con.cursor()
+
+                session = database.check_session(cur, cookie_sid, username)
                 if session == 'SUCCESS':
                     self.user = username
                 else:
@@ -124,7 +134,10 @@ class MyHandler(server.BaseHTTPRequestHandler):
             if 'username' and 'sid' in cookies:
                 username = cookies['username']
                 cookie_sid = cookies['sid']
-                session = database.check_session(cookie_sid, username)
+                con = sqlite3.connect('database.db', check_same_thread=False)
+                cur = con.cursor()
+
+                session = database.check_session(cur, cookie_sid, username)
                 if session == 'SUCCESS':
                     self.user = username
                 else:
@@ -153,7 +166,10 @@ class MyHandler(server.BaseHTTPRequestHandler):
         print('Request payload: ' + json.dumps(post_body))
         username = post_body['username']
         password = post_body['password']
-        login_status = database.login_user(username, password)
+        con = sqlite3.connect('database.db', check_same_thread=False)
+        cur = con.cursor()
+
+        login_status = database.login_user(con, cur, username, password)
 
         if login_status[0] == 'SUCCESS':
             sid = login_status[1]
@@ -178,7 +194,10 @@ class MyHandler(server.BaseHTTPRequestHandler):
     def logout(self):
         self.send_response(200)
         if self.user != False:
-            database.delete_sessions(self.user)
+            con = sqlite3.connect('database.db', check_same_thread=False)
+            cur = con.cursor()
+
+            database.delete_sessions(con, cur, self.user)
         self.clear_cookies()
         self.end_headers()
         if not self.user:
@@ -197,7 +216,11 @@ class MyHandler(server.BaseHTTPRequestHandler):
         print('Request payload: ' + json.dumps(post_body))
         username = post_body['username']
         password = post_body['password']
-        user_creation_status = database.create_user(username, password)
+
+        con = sqlite3.connect('database.db', check_same_thread=False)
+        cur = con.cursor()
+        user_creation_status = database.create_user(con, cur, username, password)
+
         if user_creation_status == 'SUCCESS':
             return_object = {'user_creation': 'success', 'username': username}
             self.send_response(200)
@@ -235,7 +258,11 @@ class MyHandler(server.BaseHTTPRequestHandler):
             else:
                 headline = post_body ['headline']
                 content = post_body['content']
-                post_creation_status = database.create_post(username, headline, content)
+
+                con = sqlite3.connect('database.db', check_same_thread=False)
+                cur = con.cursor()
+
+                post_creation_status = database.create_post(con, cur, username, headline, content)
                 if post_creation_status[0] == 'SUCCESS':
                     post_id = post_creation_status[1]
                     return_object = {'post_creation': 'success', 'post_id': post_id}
@@ -250,7 +277,9 @@ class MyHandler(server.BaseHTTPRequestHandler):
         self.wfile.write(bytes(str(json.dumps(return_object)), encoding='utf-8'))
 
     def get_posts(self):
-        post_list = database.get_posts()
+        con = sqlite3.connect('database.db', check_same_thread=False)
+        cur = con.cursor()
+        post_list = database.get_posts(cur)
         if post_list['status'] == 'NO_POSTS':
             return_object = {'status': 'no_posts'}
         elif post_list['status'] == 'SUCCESS':
@@ -270,11 +299,19 @@ class MyHandler(server.BaseHTTPRequestHandler):
                 list_cookie[c[cookie].split('=')[0].lstrip()] = c[cookie].split('=')[1]
             return list_cookie
 
-httpd = socketserver.TCPServer(('', PORT), MyHandler)
-print('Server started on ', PORT)
-try:
-    httpd.serve_forever()
-except KeyboardInterrupt:
+class ThreadingSimpleServer(ThreadingMixIn, HTTPServer):
     pass
-httpd.server_close()
-print('Server stopped.')
+
+print('Server started on ', PORT)
+
+def run():
+    server = ThreadingSimpleServer(('0.0.0.0', PORT), MyHandler)
+    try:
+        server.serve_forever()
+    except KeyboardInterrupt:
+        pass
+    server.server_close()
+    print('Server stopped.')
+
+if __name__ == '__main__':
+    run()

@@ -35,10 +35,10 @@ describe('Checking log in page.', () => {
     })
 
     it('shows a success message if login is successful', () => {
-        cy.get('#username').type('login_test')
-        cy.get('#password').type('login')
+        cy.get('#username').type('login')
+        cy.get('#password').type('login_test')
         cy.get('#login_ok').click()
-        cy.get('#login-status').should('have.text', 'You are logged in as login_test')
+        cy.get('#login-status').should('have.text', 'You are logged in as login')
         cy.get('#logout').should('be.visible')
     })
 
@@ -46,5 +46,16 @@ describe('Checking log in page.', () => {
         cy.get('#logout').click()
         cy.get('#login-status').should('not.be.visible')
         cy.get('#logout').should('not.be.visible')
+    })
+
+    it('gets login cookie and verifies the logged in status', () => {
+        const {username, password} = {'username': 'login', 'password': 'login_test'};
+        cy.request({method: 'POST', url: '/login.json', body: {
+            username,
+            password,
+        }})
+
+        cy.visit('/index.html')
+        cy.get('#login-status').should('not.be.empty')
     })
 })

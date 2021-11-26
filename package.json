@@ -10,7 +10,7 @@
     "db:reset": "sqlite3 database.db \".read sql/reset.sql\"",
     "db:seed": "sqlite3 database.db \".read sql/seed.sql\"",
     "jest:run": "jest",
-    "wd:run": "python selenium/test_1_startpage.py"
+    "wd:run": "python -m pytest --verbose -s selenium/"
   },
   "repository": {
     "type": "git",

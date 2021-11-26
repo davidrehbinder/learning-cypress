@@ -5,7 +5,7 @@ describe('Can we make a post?', () => {
     })
 
     let cookie
-    const {username, password, headline, content} = {'username': 'login_test', 'password': 'login', 'headline': 'headline 2', 'content': 'body 2'};
+    const {username, password, headline, content} = {'username': 'login', 'password': 'login_test', 'headline': 'headline 2', 'content': 'body 2'};
     it('makes a post by API', () => {
         cy.request({method: 'POST', url: '/login.json', body: {
             username,

@@ -25,8 +25,8 @@ REPLACE INTO
         password
         )
     VALUES (
-        "login_test",
-        "login"
+        "login",
+        "login_test"
         );
 REPLACE INTO
     posts (

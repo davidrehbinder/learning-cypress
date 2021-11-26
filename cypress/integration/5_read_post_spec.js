@@ -5,7 +5,7 @@ describe('Can we read the posts?', () => {
     })
 
     let cookie
-    const {username, password} = {'username': 'login_test', 'password': 'login'};
+    const {username, password} = {'username': 'login', 'password': 'login_test'};
     it('reads posts through the API', () => {
         cy.request('/post.json').then(
             (response) => {

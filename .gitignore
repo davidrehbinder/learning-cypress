@@ -1,9 +1,9 @@
 **/cypress/downloads/
-**/cypress/integration/examples-*/
 **/cypress/screenshots/
 **/cypress/videos/
 **/modules/__pycache__
 **/node_modules
+**/selenium/__pycache__
 database.db
 favicon.ico
 geckodriver.log

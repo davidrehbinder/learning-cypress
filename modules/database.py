@@ -4,10 +4,10 @@ import datetime
 import sqlite3
 from random import randint
 
-con = sqlite3.connect('database.db')
-cur = con.cursor()
+# con = sqlite3.connect('database.db', check_same_thread=False)
+# cur = con.cursor()
 
-def create_tables():
+def create_tables(con, cur):
     cur.execute('''CREATE TABLE IF NOT EXISTS users(
         username TEXT NOT NULL UNIQUE, password TEXT NOT NULL)''')
     cur.execute('''CREATE TABLE IF NOT EXISTS posts(id INTEGER NOT
@@ -20,7 +20,7 @@ def create_tables():
 def generate_sid():
     return ''.join(str(randint(1,9)) for _ in range(10))
 
-def login_user(user, password):
+def login_user(con, cur, user, password):
     cur.execute('''SELECT 1 FROM users WHERE username = ?
         AND password = ?''', (user, password))
     status = cur.fetchall()
@@ -36,7 +36,7 @@ def login_user(user, password):
     else:
         return ['ERROR', False]
 
-def check_session(sid, user):
+def check_session(cur, sid, user):
     cur.execute('''SELECT * FROM sessions WHERE sid = ? AND username = ? ORDER BY
         expires DESC LIMIT 1''', (sid, user))
     sids = cur.fetchall()
@@ -55,7 +55,7 @@ def check_session(sid, user):
     else:
         return 'ERROR'
 
-def create_user(user, password):
+def create_user(con, cur, user, password):
     cur.execute('''SELECT 1 FROM users WHERE username = ?''',
         (user,))
     exists = cur.fetchall()
@@ -74,7 +74,7 @@ def create_user(user, password):
     else:
         return 'USER_EXISTS'
 
-def create_post(user, headline, content):
+def create_post(con, cur, user, headline, content):
     cur.execute('''SELECT id FROM posts ORDER BY id DESC LIMIT 1''')
     id = cur.fetchall()
     return_data = []
@@ -92,7 +92,7 @@ def create_post(user, headline, content):
         print('An error occurred:', e.args[0])
         return ['ERROR']
 
-def get_posts():
+def get_posts(cur):
     cur.execute('''SELECT * from posts''')
     posts = cur.fetchall()
     if posts == []:
@@ -108,7 +108,7 @@ def get_posts():
     print(return_data['status'])
     return return_data
 
-def delete_sessions(user):
+def delete_sessions(con, cur, user):
     cur.execute('''SELECT 1 FROM sessions WHERE username = ?''', (user,))
     session = cur.fetchall()
     if not (session == []):
