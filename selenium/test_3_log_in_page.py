@@ -14,7 +14,7 @@ options.headless = True
 
 subprocess.check_call('npm run db:reset', shell=True)
 
-class SignUpPageTest(unittest.TestCase):
+class LoginPageTest(unittest.TestCase):
 
     def setUp(self):
         self.driver = webdriver.Chrome(options=options)
