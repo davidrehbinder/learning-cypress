@@ -87,7 +87,7 @@ class LoggedInPageTest(unittest.TestCase):
 
         post_body = {'username': 'login', 'headline': 'headline 2', 'content': 'body 2'}
 
-        make_post = requests.post('http://localhost:8080/post.json', json=post_body, headers=header, cookies = cookies)
+        make_post = requests.post('http://localhost:8080/post.json', json=post_body, headers=header, cookies=cookies)
 
         assert 'post_id' in make_post.text 
 
