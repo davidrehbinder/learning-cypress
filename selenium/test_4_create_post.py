@@ -23,8 +23,8 @@ class LoggedInPageTest(unittest.TestCase):
         self.wait = WebDriverWait(self.driver, 10)
         self.driver.get('http://localhost:8080/index.html')
 
-    def testUnauthenticatedLoggedInPage(self):
-        self.driver.get('http://localhost:8080/loggedin.html')
+    def testUnauthenticatedPostsPage(self):
+        self.driver.get('http://localhost:8080/posts.html')
 
         response = self.driver.find_element(By.TAG_NAME, 'body').text
         assert response == 'Forbidden'
