@@ -23,8 +23,8 @@ class LoggedInPageTest(unittest.TestCase):
         self.wait = WebDriverWait(self.driver, 10)
         self.driver.get('http://localhost:8080/index.html')
 
-    def testUnauthenticatedPostsPage(self):
-        self.driver.get('http://localhost:8080/posts.html')
+    def testUnauthenticatedLoggedInPage(self):
+        self.driver.get('http://localhost:8080/loggedin.html')
 
         response = self.driver.find_element(By.TAG_NAME, 'body').text
         assert response == 'Forbidden'
@@ -54,6 +54,7 @@ class LoggedInPageTest(unittest.TestCase):
             self.driver.find_element(By.ID, 'login-status')
         except NoSuchElementException:
             response = False
+
         assert response == True
 
     def testCreatePostThroughPage(self):
@@ -76,7 +77,21 @@ class LoggedInPageTest(unittest.TestCase):
 
         self.driver.get('http://localhost:8080/loggedin.html')
 
-        # make a post through the form here
+        headline = self.driver.find_element(By.ID, 'headline')
+        content = self.driver.find_element(By.ID, 'content')
+        make_post = self.driver.find_element(By.ID, 'post_ok')
+
+        headline.clear()
+        content.clear()
+        headline.send_keys('headline 2')
+        content.send_keys('body 2')
+
+        make_post.click()
+
+        response = self.wait.until(EC.text_to_be_present_in_element((By.ID,
+            'response'), 'Post created successfully'))
+
+        assert response == True
 
     def testCreatePostThroughAPI(self):
         header = {'Content-Type': 'application/json'}
@@ -85,7 +100,7 @@ class LoggedInPageTest(unittest.TestCase):
 
         cookies = r.cookies
 
-        post_body = {'username': 'login', 'headline': 'headline 2', 'content': 'body 2'}
+        post_body = {'username': 'login', 'headline': 'headline 3', 'content': 'body 3'}
 
         make_post = requests.post('http://localhost:8080/post.json', json=post_body, headers=header, cookies=cookies)
 

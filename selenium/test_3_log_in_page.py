@@ -83,6 +83,7 @@ class LoginPageTest(unittest.TestCase):
         assert response == True
 
     def testLoginPageSuccess(self):
+        subprocess.check_call('npm run db:reset', shell=True)
         subprocess.check_call('npm run db:seed', shell=True)
 
         username = self.driver.find_element(By.ID, 'username')

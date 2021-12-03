@@ -135,7 +135,6 @@
 
     function createUserComplete() {
         var createUserStatus = JSON.parse(createUser.responseText);
-        console.log(createUserStatus);
         switch (createUserStatus["user_creation"]) {
             case "success":
                 responseArea.innerHTML = "User " + createUserStatus["username"] + " created.";
@@ -159,7 +158,6 @@
     function postAttempt() {
         responseArea.innerHTML = "";
         let username = cookieUsername();
-        console.log(username);
         if (typeof(username) == undefined) {
             return;
         };
@@ -231,7 +229,7 @@
                 };
                 break;
             default:
-                console.log(getPostsStatus);
+                break;
         };
     };
 

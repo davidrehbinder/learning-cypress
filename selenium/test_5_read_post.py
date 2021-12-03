@@ -5,7 +5,6 @@ import requests
 import subprocess
 import unittest
 from selenium import webdriver
-from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -24,12 +23,16 @@ class PostsPageTest(unittest.TestCase):
         self.driver.get('http://localhost:8080/index.html')
 
     def testUnauthenticatedPostsPage(self):
+        subprocess.check_call('npm run db:reset', shell=True)
+
         self.driver.get('http://localhost:8080/posts.html')
 
-        response = self.driver.find_element(By.TAG_NAME, 'body').text
-        assert response == 'Forbidden'
+        response = self.driver.find_element(By.ID, 'post-list').text
+        assert response == ''
 
     def testAuthenticatedPostsPage(self):
+        subprocess.check_call('npm run db:reset', shell=True)
+        subprocess.check_call('npm run db:seed', shell=True)
         header = {'Content-Type': 'application/json'}
         request_data = {'username': 'login', 'password': 'login_test'}
         r = requests.post('http://localhost:8080/login.json', json=request_data, headers=header)
@@ -47,27 +50,23 @@ class PostsPageTest(unittest.TestCase):
         for i in range(0,len(cookies)):
             self.driver.add_cookie(cookies[i])
 
-        self.driver.get('http://localhost:8080/loggedin.html')
+        self.driver.get('http://localhost:8080/posts.html')
 
-        response = True
-        try:
-            self.driver.find_element(By.ID, 'login-status')
-        except NoSuchElementException:
-            response = False
+        response = self.wait.until(EC.text_to_be_present_in_element((By.CLASS_NAME,
+            'headline'), 'headline'))
+
         assert response == True
-
+  
     def testReadPostThroughAPI(self):
         header = {'Content-Type': 'application/json'}
         request_data = {'username': 'login', 'password': 'login_test'}
         r = requests.post('http://localhost:8080/login.json', json=request_data, headers=header)
-
+ 
         cookies = r.cookies
-
-        post_body = {'username': 'login', 'headline': 'headline 2', 'content': 'body 2'}
-
-        make_post = requests.post('http://localhost:8080/post.json', json=post_body, headers=header, cookies=cookies)
-
-        assert 'post_id' in make_post.text 
+ 
+        get_post = requests.get('http://localhost:8080/post.json', headers=header, cookies=cookies)
+ 
+        assert 'success' in get_post.text 
 
     def tearDown(self):
         self.driver.quit()
