@@ -1,15 +1,15 @@
 # learning-cypress
 
-Just learning Cypress/Selenium Webdriver stuff.
+An increasingly inaccurately named repository for my process of learning Cypress/Selenium Webdriver/Playwright stuff.
 
 ## What it does
 
-Runs a *very* simple web application (currently with four pages - index, login, sign up, and a page that's only viewable in logged in state where you can post data), and has a bunch of [Cypress](https://cypress.io/) tests running against it. I'm also starting to write Selenium Webdriver tests.
+Runs a *very* simple web application (currently with four pages - index, login, sign up, and a page that's only viewable in logged in state where you can post data), and has a bunch of [Cypress](https://cypress.io/) and [Selenium Webdriver](https://www.selenium.dev/documentation/webdriver/) tests running against it. I am currently adding support for [Playwright](https://playwright.dev/). There's the beginnings of a skeleton for [Jest](https://jestjs.io/docs/puppeteer)/[Puppeteer](https://pptr.dev/) too, but I never got anywhere when I tried it last. Will have a go at it again after we've reached parity for Playwright.
 
 ## Requirements
 
-* Python3 (I wrote the Python bits for Python 3.7.3)
-* NodeJS (I use Node 14.15) for Cypress -- `npm install cypress` should get it.
+* Python3 (I wrote the Python bits for Python 3.12.3)
+* NodeJS (I use Node 22.1.0) for Cypress and Playwright -- `npm install cypress` and `npm install playwright` should get them.
 * SQLite3
 * ChromeDriver
 
