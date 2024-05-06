@@ -4,14 +4,21 @@ An increasingly inaccurately named repository for my process of learning Cypress
 
 ## What it does
 
-Runs a *very* simple web application (currently with four pages - index, login, sign up, and a page that's only viewable in logged in state where you can post data), and has a bunch of [Cypress](https://cypress.io/) and [Selenium Webdriver](https://www.selenium.dev/documentation/webdriver/) tests running against it. I am currently adding support for [Playwright](https://playwright.dev/). There's the beginnings of a skeleton for [Jest](https://jestjs.io/docs/puppeteer)/[Puppeteer](https://pptr.dev/) too, but I never got anywhere when I tried it last. Will have a go at it again after we've reached parity for Playwright.
+Runs a *very* simple web application (currently with four pages - index, login, sign up, and a page that's only viewable in logged in state where you can post data), and has a bunch of [Cypress](https://cypress.io/) and [Selenium Webdriver](https://www.selenium.dev/documentation/webdriver/) tests running against it. I am currently adding support for [Playwright](https://playwright.dev/) using both JavaScript and Python, and JavaScript versions of the Selenium tests. There's the beginnings of a skeleton for [Jest](https://jestjs.io/docs/puppeteer)/[Puppeteer](https://pptr.dev/) too, but I never got anywhere when I tried it last -- I'll have a go at it again after we've reached parity for Playwright.
 
 ## Requirements
 
-* Python3 (I wrote the Python bits for Python 3.12.3)
-* NodeJS (I use Node 22.1.0) for Cypress and Playwright -- `npm install cypress` and `npm install playwright` should get them.
+* Python3 (I wrote the Python bits for Python 3.12.3) for Selenium (Python version) and Playwright (Python version)
+* NodeJS (I use Node 22.1.0) for Cypress, Playwright (JS version), and Selenium (JS version)
 * SQLite3
-* ChromeDriver
+* The various browser webdrivers
+
+## Installing
+
+* `npm install` for the Node/JS parts
+* `pip install pytest pytest-playwright selenium` for the Python parts
+* `playwright install` to install the webdrivers for Playwright (seems like it might not be accessible by Selenium, so also do the next line)
+* Links for the webdrivers can be found in the [Selenium documentation](https://www.selenium.dev/selenium/docs/api/py/#drivers)
 
 ## Running it
 
@@ -22,4 +29,4 @@ Runs a *very* simple web application (currently with four pages - index, login, 
 
 ## DISCLAIMER
 
-This is very much distributed as-is, and is in **no way, shape, or form suitable as anything other than a minor toybox for local hands-on learning**.
+This is very much distributed as-is, and is in ***no way, shape, or form suitable as anything other than a minor toybox for local hands-on learning***.
