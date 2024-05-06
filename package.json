@@ -23,13 +23,12 @@
   },
   "homepage": "https://github.com/krfsm/learning-cypress#readme",
   "devDependencies": {
-    "cypress": "^8.5.0",
-    "eslint-plugin-cypress": "^2.12.1",
-    "jest": "^27.3.1",
-    "jest-puppeteer": "^6.0.0",
-    "puppeteer": "^11.0.0"
-  },
-  "dependencies": {
-    "selenium-webdriver": "^4.0.0-rc-1"
+    "cypress": "^13.8.1",
+    "eslint-plugin-cypress": "^3.1.1",
+    "jest": "^29.7.0",
+    "jest-puppeteer": "^10.0.1",
+    "playwright": "^1.43.1",
+    "puppeteer": "^22.8.0",
+    "selenium-webdriver": "^4.20.0"
   }
 }
