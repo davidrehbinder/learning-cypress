@@ -8,3 +8,7 @@ database.db
 favicon.ico
 geckodriver.log
 package-lock.json
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
