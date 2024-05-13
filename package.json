@@ -13,7 +13,7 @@
     "pw:report":"playwright show-report",
     "pw:run":"playwright test",
     "pw:open":"playwright test --ui",
-    "wd:run": "python -m pytest selenium/"
+    "wd:run": "python3 -m pytest selenium/"
   },
   "repository": {
     "type": "git",

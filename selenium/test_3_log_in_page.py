@@ -10,7 +10,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 options = webdriver.ChromeOptions()
-options.headless = True
+options.add_argument("--headless=new")
 
 subprocess.check_call('npm run db:reset', shell=True)
 
@@ -124,7 +124,7 @@ class LoginPageTest(unittest.TestCase):
 
         self.driver.get('http://localhost:8080/login.html')
 
-        logout = self.driver.find_element(By.ID, 'logout')
+        logout = self.driver.find_element(By.ID, 'logoutButton')
 
         logout.click()
 

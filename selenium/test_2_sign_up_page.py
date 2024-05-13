@@ -9,7 +9,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 options = webdriver.ChromeOptions()
-options.headless = True
+options.add_argument("--headless=new")
 
 subprocess.check_call('npm run db:reset', shell=True)
 
