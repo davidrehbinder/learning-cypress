@@ -3,9 +3,10 @@ const { test, expect } = require('@playwright/test');
 
 test.describe('login page tests', () => {
     let page;
+    
     test.beforeAll(async ({ browser }) => {
-        const context = await browser.newContext();
-        page = await context.newPage();
+        const browserContext = await browser.newContext();
+        page = await browserContext.newPage();
         await page.goto('/login.html');
         require('child_process').exec('npm run db:reset && npm run db:seed')
     });
@@ -30,34 +31,34 @@ test.describe('login page tests', () => {
     });
 
     test('throws error if we attempt to sign up with empty fields', async () => {
-        // If both fields are empty...    
-        await page.locator('#login_ok').click();
+    // If both fields are empty...    
+        await page.getByRole('button', { name: 'Ok' }).click();
         await expect(page.locator('#response')).toContainText('Username and password required.')
         
         // ...or either password field...
         await page.getByLabel('username').type('apa');
-        await page.locator('#login_ok').click();
+        await page.getByRole('button', { name: 'Ok' }).click();
         await expect(page.locator('#response')).toContainText('Username and password required.')
 
         // ...or username field are empty.
         await page.getByLabel('password').type('apa');
-        await page.locator('#login_ok').click();
+        await page.getByRole('button', { name: 'Ok' }).click();
         await expect(page.locator('#response')).toContainText('Username and password required.')
     });
 
     test('throws an error if user or password is wrong or does not exist', async () => {
         await page.getByLabel('username').type('apa');
         await page.getByLabel('password').type('apa');
-        await page.locator('#login_ok').click();
+        await page.getByRole('button', { name: 'Ok' }).click();
         await expect(page.locator('#response')).toContainText('Login failed.')
     });
 
-    test('and the happy path, which shows a success message and then logs out', async () => {
+    test.only('and the happy path, which shows a success message and then logs out', async () => {
         await page.getByLabel('username').type('login');
         await page.getByLabel('password').type('login_test');
-        await page.locator('#login_ok').click();
+        await page.getByRole('button', { name: 'Ok' }).click();
         await expect(page.locator('#login-status')).toContainText('You are logged in as login')
-        await page.locator('#logout').click();
+        await page.getByRole('button', { name: 'Log out' }).click();
         await expect(page.locator('#login-status')).toBeHidden();
         await expect(page.locator('#logout')).toBeHidden();
     })

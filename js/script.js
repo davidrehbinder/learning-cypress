@@ -6,13 +6,19 @@
     const usernameField = document.getElementById("username");
     const passwordField = document.getElementById("password");
     const headlineField = document.getElementById("headline");
-    const contentField = document.getElementById("content");
     const cancelButton = document.getElementById("cancel");
+    const contentField = document.getElementById("content");
     const header = document.getElementById("header");
     const loginStatus = document.getElementById("login-status");
-    const logoutButton = document.getElementById("logout");
-
     const responseArea = document.getElementById("response");
+    const logoutButtonArea = document.getElementById("logout");
+    var logoutButton = document.getElementById("logoutButton");
+
+    const domObserver = new MutationObserver(() => {
+        if (logoutButton == null) {
+            logoutButton = document.getElementById("logoutButton");
+        }
+    });
 
     var login = new XMLHttpRequest();
     var createUser = new XMLHttpRequest();
@@ -39,8 +45,7 @@
 
     if (document.cookie.split(";").filter(s => s.includes("username=" + cookieUsername())) != "") {
         loginStatus.innerHTML = "You are logged in as user " + cookieUsername();
-        logoutButton.innerHTML = "Log out.";
-        logoutButton.addEventListener("click", logOut);
+        makeLogoutButton();
         if (page == "/index.html") {
             header.innerHTML = "<a href=\"/loggedin.html\">Create a post</a> |"
             header.innerHTML = header.innerHTML +"<a href=\"/posts.html\">View posts</a>"
@@ -96,13 +101,12 @@
             case "success":
                 response = login.responseText;
                 loginStatus.innerHTML = "You are logged in as " + cookieUsername();
-                logoutButton.innerHTML = "Log out.";
-                logoutButton.addEventListener("click", logOut);
+                makeLogoutButton();
                 break;
             case "failure":
                 responseArea.innerHTML = "Login failed.";
                 loginStatus.innerHTML = "";
-                logoutButton.innerHTML = "";
+                logoutButtonArea.innerHTML = "";
                 break;
             case "error":
                 break;
@@ -233,16 +237,27 @@
         };
     };
 
+    function makeLogoutButton() {
+        const logoutButton = document.createElement("button");
+        logoutButton.id = "logoutButton";
+        logoutButton.name = "logoutButton";
+        logoutButton.innerHTML = "Log out";
+        logoutButtonArea.appendChild(logoutButton);
+        logoutButton.addEventListener("click", logOut);
+    };
+
     function logOut() {
         logout.open("POST", "/logout.json");
         logout.setRequestHeader("Content-Type", "application/json");
         logout.send();
         loginStatus.innerHTML = "";
-        logoutButton.innerHTML = "";
+        logoutButtonArea.innerHTML = "";
         if (page == "/index.html") {
             header.innerHTML = "";
         };
-    }
+    };
+
+    domObserver.observe(document.body, { childList: true, subtree: true});
 
     function cookieUsername() {
         if (document.cookie.split(";").filter(s => s.includes("username")) != "") {
