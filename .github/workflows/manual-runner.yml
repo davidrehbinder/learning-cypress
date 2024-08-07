@@ -29,6 +29,7 @@ jobs:
       - name: Install Node stuff
         run: npm install
 
-      - name: Start server
+      - name: Start server and curl
         run: |
           python3 ./server.py 1> /dev/null
+          curl http://localhost:8080/index.html | grep "Main"
