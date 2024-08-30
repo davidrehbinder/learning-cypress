@@ -2,14 +2,11 @@
 const { defineConfig, devices } = require('@playwright/test');
 
 /**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
- */
-// require('dotenv').config();
-
-/**
  * @see https://playwright.dev/docs/test-configuration
  */
+
+// export const STORAGE_STATE = path.join(__dirname, 'playwright/.auth/user.json')
+
 module.exports = defineConfig({
   testDir: './playwright/tests/',
   /* Run tests in files in parallel */
@@ -25,7 +22,7 @@ module.exports = defineConfig({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: 'http://127.0.0.1:8080',
+    baseURL: 'http://localhost:8080',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
@@ -36,18 +33,64 @@ module.exports = defineConfig({
   /* Configure projects for major browsers */
   projects: [
     {
+      name: 'setup',
+      testMatch: 'support/*.setup.ts',
+      use: {
+        storageState: 'playwright/.auth/user.json'
+      }
+    },
+    {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      testIgnore: 'tests/2_logged_in/*',
+      use: {
+        ...devices['Desktop Chrome'],
+      },
     },
 
     {
       name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
+      testIgnore: 'tests/2_logged_in/*',
+      use: {
+        ...devices['Desktop Firefox'],
+      },
     },
 
     {
       name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
+      testIgnore: 'tests/2_logged_in/*',
+      use: {
+        ...devices['Desktop Safari'],
+      },
+    },
+
+    {
+      name: 'chromium-loggedin',
+      testIgnore: 'tests/1_logged_out/*',
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: 'playwright/.auth/user.json'
+      },
+      dependencies: ['setup']
+    },
+
+    {
+      name: 'firefox-loggedin',
+      testIgnore: 'tests/1_logged_out/*',
+      use: {
+        ...devices['Desktop Firefox'],
+        storageState: 'playwright/.auth/user.json'
+      },
+      dependencies: ['setup']
+    },
+
+    {
+      name: 'webkit-loggedin',
+      testIgnore: 'tests/1_logged_out/*',
+      use: {
+        ...devices['Desktop Safari'],
+        storageState: 'playwright/.auth/user.json',
+      },
+      dependencies: ['setup']
     },
 
     /* Test against mobile viewports. */

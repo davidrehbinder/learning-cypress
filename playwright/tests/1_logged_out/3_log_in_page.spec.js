@@ -1,15 +1,19 @@
 // @ts-check
-const { test, expect } = require('@playwright/test');
+import { test, expect } from '@playwright/test';
 
 test.describe('login page tests', () => {
     let page;
-    
+
     test.beforeAll(async ({ browser }) => {
+        require('child_process').exec('npm run db:seed');
         const browserContext = await browser.newContext();
         page = await browserContext.newPage();
         await page.goto('/login.html');
-        require('child_process').exec('npm run db:reset && npm run db:seed')
     });
+
+    test.afterAll(async () => {
+        require('child_process').exec('npm run db:reset')
+    })
 
     test('has username and password fields', async () => {
         // Expect login status to not be shown
@@ -30,7 +34,7 @@ test.describe('login page tests', () => {
         await expect(page.getByLabel('password')).toBeEditable();
     });
 
-    test('throws error if we attempt to sign up with empty fields', async () => {
+    test('throws error if we attempt to sign in with empty fields', async () => {
     // If both fields are empty...    
         await page.getByRole('button', { name: 'Ok' }).click();
         await expect(page.locator('#response')).toContainText('Username and password required.')
@@ -53,13 +57,25 @@ test.describe('login page tests', () => {
         await expect(page.locator('#response')).toContainText('Login failed.')
     });
 
-    test.only('and the happy path, which shows a success message and then logs out', async () => {
+    test('and the happy path, which shows a success message and then logs out', async () => {
         await page.getByLabel('username').type('login');
         await page.getByLabel('password').type('login_test');
         await page.getByRole('button', { name: 'Ok' }).click();
         await expect(page.locator('#login-status')).toContainText('You are logged in as login')
+    })
+
+    test('then the logout button (and that the login endpoint works)', async () => {
+        const loggedIn = await page.request.post('/login.json', {
+            data: {
+                username: 'login',
+                password: 'login_test'
+            }
+        });
+        let response = await loggedIn.text();
+        await expect(response).toEqual( '{"login": "success"}' )
+        await page.goto('/login.html');
+        await expect(page.locator('#login-status')).toContainText('You are logged in as user login');
         await page.getByRole('button', { name: 'Log out' }).click();
         await expect(page.locator('#login-status')).toBeHidden();
-        await expect(page.locator('#logout')).toBeHidden();
     })
 });

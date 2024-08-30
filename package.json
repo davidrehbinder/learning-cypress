@@ -10,9 +10,9 @@
     "db:reset": "sqlite3 database.db \".read sql/reset.sql\"",
     "db:seed": "sqlite3 database.db \".read sql/seed.sql\"",
     "jest:run": "jest",
-    "pw:report":"playwright show-report",
-    "pw:run":"playwright test",
-    "pw:open":"playwright test --ui",
+    "pw:report": "playwright show-report",
+    "pw:run": "playwright test",
+    "pw:open": "playwright test --ui",
     "wd:run": "python3 -m pytest selenium/"
   },
   "repository": {
@@ -34,6 +34,9 @@
     "jest-puppeteer": "^10.0.1",
     "playwright": "^1.43.1",
     "puppeteer": "^22.8.0",
-    "selenium-webdriver": "^4.20.0"
+    "selenium-webdriver": "^4.20.0",
+    "dotenv": "^16.4.5"
+  },
+  "dependencies": {
   }
 }

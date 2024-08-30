@@ -47,8 +47,7 @@
         loginStatus.innerHTML = "You are logged in as user " + cookieUsername();
         makeLogoutButton();
         if (page == "/index.html") {
-            header.innerHTML = "<a href=\"/loggedin.html\">Create a post</a> |"
-            header.innerHTML = header.innerHTML +"<a href=\"/posts.html\">View posts</a>"
+            header.innerHTML = "<a href=\"/loggedin.html\">Create a post</a> | <a href=\"/posts.html\">View posts</a>"
         };
         if (page == "/posts.html") {
             getPostsAttempt();

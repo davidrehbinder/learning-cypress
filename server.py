@@ -31,6 +31,7 @@ class MyHandler(BaseHTTPRequestHandler):
         cookies = self.parse_cookies(self.headers['Cookie'])
         if cookies != None:
             if 'username' and 'sid' in cookies:
+                print(cookies)
                 username = cookies['username']
                 cookie_sid = cookies['sid']
                 con = sqlite3.connect('database.db', check_same_thread=False)
@@ -53,6 +54,17 @@ class MyHandler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(b'Private!')
         elif self.path == '/':
+            try:
+                self.send_response(301)
+                self.send_header('Location', '/index.html')
+                self.end_headers()
+            except Exception:
+                self.send_response(500)
+                if self.user == False:
+                    self.clear_cookies()
+                self.end_headers()
+                self.wfile.write(b'Error')
+        elif self.path == '/index.html':
             try:
                 with open('index.html', 'rb') as f:
                     data = f.read()
